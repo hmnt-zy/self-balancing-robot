@@ -11,10 +11,9 @@ The current stage involves setting up the robot description, Gazebo simulation e
 - [x] Created initial robot description using URDF
 - [x] Configured Gazebo simulation environment
 - [x] Completed ROS package setup and integration
-- [ ] Integrate IMU sensor feedback in simulation
+- [x] Integrate IMU sensor feedback in simulation
 - [ ] Implement self-balancing controller
 - [ ] Tune controller parameters for stable balancing
 - [ ] Improve robot dynamics and physical properties
 - [ ] Develop a more realistic URDF model
-- [ ] Add realistic sensors and actuator modeling
-- [ ] Perform final simulation testing
+- [ ] Add more controller options
