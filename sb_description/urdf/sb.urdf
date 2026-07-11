@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+
+<robot name="balancing_robot">
+
+  <!-- ================= BASE ================= -->
+
+  <link name="base_link">
+    <visual>
+  <origin xyz="0 0 0.125" rpy="0 0 0"/>
+  <geometry>
+    <box size="0.10 0.05 0.15"/>
+  </geometry>
+  <material name="blue">
+    <color rgba="0.2 0.4 0.8 1"/>
+  </material>
+</visual>
+
+<collision>
+  <origin xyz="0 0 0.125" rpy="0 0 0"/>
+  <geometry>
+    <box size="0.10 0.05 0.15"/>
+  </geometry>
+</collision>
+
+      <!-- Axle visual -->
+<visual>
+  <origin xyz="0 0 0.05" rpy="1.57079632679 0 0"/>
+  <geometry>
+    <cylinder radius="0.008" length="0.16"/>
+  </geometry>
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1"/>
+  </material>
+</visual>
+
+<!-- Axle collision -->
+<collision>
+  <origin xyz="0 0 0.05" rpy="1.57079632679 0 0"/>
+  <geometry>
+    <cylinder radius="0.008" length="0.16"/>
+  </geometry>
+</collision>
+
+   <inertial>
+  <origin xyz="0 0 0.125" rpy="0 0 0"/>
+  <mass value="2.0"/>
+
+  <inertia
+      ixx="0.004167"
+      ixy="0"
+      ixz="0"
+      iyy="0.005417"
+      iyz="0"
+      izz="0.002083"/>
+</inertial>
+
+  </link>
+
+  <!-- ================= LEFT WHEEL ================= -->
+
+  <link name="left_wheel">
+
+    <visual>
+      <origin xyz="0 0 0"
+              rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.02"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0"
+              rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.02"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.20"/>
+      <origin xyz="0 0 0"/>
+
+      <inertia
+        ixx="0.000132"
+        ixy="0"
+        ixz="0"
+        iyy="0.000250"
+        iyz="0"
+        izz="0.000132"/>
+    </inertial>
+
+  </link>
+
+  <!-- ================= RIGHT WHEEL ================= -->
+
+  <link name="right_wheel">
+
+    <visual>
+      <origin xyz="0 0 0"
+              rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.02"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0"
+              rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.02"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.20"/>
+      <origin xyz="0 0 0"/>
+
+      <inertia
+        ixx="0.000132"
+        ixy="0"
+        ixz="0"
+        iyy="0.000250"
+        iyz="0"
+        izz="0.000132"/>
+    </inertial>
+
+  </link>
+
+  <!-- ================= LEFT JOINT ================= -->
+
+  <joint name="left_wheel_joint" type="continuous">
+
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+
+    <origin xyz="0 0.08 0.05"
+            rpy="0 0 0"/>
+
+    <axis xyz="0 1 0"/>
+
+  </joint>
+
+  <!-- ================= RIGHT JOINT ================= -->
+
+  <joint name="right_wheel_joint" type="continuous">
+
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+
+    <origin xyz="0 -0.08 0.05"
+            rpy="0 0 0"/>
+
+    <axis xyz="0 1 0"/>
+
+  </joint>
+
+
+  <link name="imu_link">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.02 0.02 0.01"/>
+    </geometry>
+    <material name="red">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.02 0.02 0.01"/>
+    </geometry>
+  </collision>
+
+  <inertial>
+    <origin xyz="0 0 0"/>
+    <mass value="0.001"/>
+    <inertia
+      ixx="1e-7"
+      ixy="0"
+      ixz="0"
+      iyy="1e-7"
+      iyz="0"
+      izz="1e-7"/>
+  </inertial>
+</link>
+
+<joint name="imu_joint" type="fixed">
+  <parent link="base_link"/>
+  <child link="imu_link"/>
+  <origin xyz="0 0 0.125" rpy="0 0 0"/>
+</joint>
+
+  <gazebo>
+
+  <plugin
+    filename="gz-sim-joint-state-publisher-system"
+    name="gz::sim::systems::JointStatePublisher">
+    <topic>joint_states</topic>
+  </plugin>
+
+  <plugin
+  filename="gz-sim-diff-drive-system"
+  name="gz::sim::systems::DiffDrive">
+  <left_joint>left_wheel_joint</left_joint>
+  <right_joint>right_wheel_joint</right_joint>
+  <wheel_separation>0.16</wheel_separation>
+  <wheel_radius>0.05</wheel_radius>
+  <topic>cmd_vel</topic>
+</plugin>
+  </gazebo>
+
+  <gazebo reference="imu_link">
+   <sensor name="imu_sensor" type="imu">
+    <always_on>true</always_on>
+    <update_rate>100</update_rate>
+    <visualize>true</visualize>
+    <gz_frame_id>imu_link</gz_frame_id>
+
+    <topic>/imu</topic>
+
+    <imu>
+      <angular_velocity>
+        <x>true</x>
+        <y>true</y>
+        <z>true</z>
+      </angular_velocity>
+
+      <linear_acceleration>
+        <x>true</x>
+        <y>true</y>
+        <z>true</z>
+      </linear_acceleration>
+
+      <orientation>
+        <enable>true</enable>
+      </orientation>
+    </imu>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu">
+    <initial_orientation_as_reference>false</initial_orientation_as_reference>
+    </plugin>
+  </sensor>
+</gazebo>
+
+
+
+</robot>
